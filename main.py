@@ -24,8 +24,8 @@ def should_use_last_link():
         return use_last_link != 'n'
     return False
 
-def run_playwright_test(url):
-    subprocess.run(["npx", "playwright", "test", "main.spec.ts", "--ui", url])
+def run_playwright_test():
+    subprocess.run(["npx", "playwright", "test", "main.spec.ts", "--ui"])
 
 def main():
     if should_use_last_link():
@@ -34,7 +34,7 @@ def main():
         url = get_user_input()
         write_url_to_json(url)
 
-    run_playwright_test(url)
+    run_playwright_test()
 
 if __name__ == "__main__":
     main()
