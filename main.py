@@ -1,55 +1,41 @@
 import json
-import urllib.parse
-from playwright.async_api import async_playwright
-from random_user_agent.user_agent import UserAgent
 import subprocess
 
+def get_user_input():
+    return input("Enter the URL: ")
 
-async def run_node_script(encrypted):
-    process = await asyncio.create_subprocess_exec('node', 'index.js', encrypted, stdout=subprocess.PIPE)
-    output, _ = await process.communicate()
-    output = output.decode('utf-8').strip()
-    decrypted = json.loads(output)["word"]
-    print(decrypted)
-    return decrypted
+def read_url_from_json():
+    try:
+        with open('tests/url.json', 'r') as file:
+            data = json.load(file)
+            return data.get('url')
+    except FileNotFoundError:
+        return None
 
+def write_url_to_json(url):
+    data = {"url": url}
+    with open('tests/url.json', 'w') as file:
+        json.dump(data, file)
 
-async def main():
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)  
-        context = await browser.new_context(user_agent=UserAgent().get_random_user_agent())
-        page = await context.new_page()
+def should_use_last_link():
+    existing_url = read_url_from_json()
+    if existing_url:
+        use_last_link = input(f"Use last link? (Y/n): ").strip().lower()
+        return use_last_link != 'n'
+    return False
 
-        url = input('Enter a URL:  ')
-        await page.goto(url)
+def run_playwright_test(url):
+    subprocess.run(["npx", "playwright", "test", "main.spec.ts", "--ui", url])
 
-        button = await page.wait_for_selector('//*[@id="modal-panel"]/div[1]/button')
-        await button.click()
+def main():
+    if should_use_last_link():
+        url = read_url_from_json()
+    else:
+        url = get_user_input()
+        write_url_to_json(url)
 
-        parsed_url = urllib.parse.urlparse(url)
-        encrypted_text = parsed_url.fragment
-
-        decrypted_word = await run_node_script(encrypted_text)
-
-        await page.bring_to_front()
-
-        for word in ['tengo', 'busca', 'estar', 'adios', 'madre', decrypted_word]:
-            await input_word(page, word)
-
-        await page.click('//*[@id="modal-panel"]/div[1]/button')
-
-        await page.eval_on_selector('xpath=/html/body/div[1]/div[1]', 'element => { element.scrollTop = element.scrollHeight; }')
-
-        await asyncio.Future()
-
-
-async def input_word(page, word):
-    for i in word:
-        await page.click(f"button.key[data-key='{i}']")
-    await page.click("button.key[data-key='enter']")
-
+    run_playwright_test(url)
 
 if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
+    main()
 
