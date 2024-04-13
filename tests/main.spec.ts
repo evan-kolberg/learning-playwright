@@ -21,8 +21,7 @@ test('decrypt and enter answer', async ({ page }) => {
     const url = JSON.parse(await readFile('tests/url.json', 'utf-8')).url;
     await page.goto(url);
 
-    const button = await page.waitForSelector('//*[@id="modal-panel"]/div[1]/button');
-    await button.click();
+    await page.click('//*[@id="modal-panel"]/div[1]/button');
 
     const parsedUrl = new URL(url);
     const encryptedText = parsedUrl.hash.substring(1);
