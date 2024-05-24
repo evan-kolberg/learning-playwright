@@ -20,8 +20,8 @@ def write_url_to_json(url):
 def should_use_last_link():
     existing_url = read_url_from_json()
     if existing_url:
-        use_last_link = input(f"Use last link? (Y/n): ").strip().lower()
-        return use_last_link != 'n'
+        use_last_link = input(f"Use last link? (y/N): ").strip().lower()
+        return use_last_link == 'y'
     return False
 
 def run_playwright_test():
