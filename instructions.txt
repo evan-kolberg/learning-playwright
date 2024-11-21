@@ -7,5 +7,5 @@
 7.  download playwright extention
 8.  verify that python is detected and npm is installed
 9.  open a vscode terminal window and run: npm init playwright@latest
-10. then run: npx playwright install
+10. then run (if browsers didn't install): npx playwright install
 11. run main.py to use the program
