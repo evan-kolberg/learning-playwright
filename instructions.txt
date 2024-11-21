@@ -1,0 +1,11 @@
+1.  download python (latest is fine) & install pkg
+2.  download node.js & install pkg
+3.  download this code as a zip from github & unzip
+4.  download vscode
+5.  restart computer
+6.  open code folder in vscode
+7.  download playwright extention
+8.  verify that python is detected and npm is installed
+9.  open a vscode terminal window and run: npm init playwright@latest
+10. then run: npx playwright install
+11. run main.py to use the program

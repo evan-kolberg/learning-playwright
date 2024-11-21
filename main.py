@@ -1,40 +1,28 @@
 import json
 import subprocess
 
-def get_user_input():
-    return input("Enter the URL: ")
-
-def read_url_from_json():
+def main():
     try:
         with open('tests/url.json', 'r') as file:
             data = json.load(file)
-            return data.get('url')
+            existing_url = data.get('url')
     except FileNotFoundError:
-        return None
+        existing_url = None
 
-def write_url_to_json(url):
-    data = {"url": url}
-    with open('tests/url.json', 'w') as file:
-        json.dump(data, file)
-
-def should_use_last_link():
-    existing_url = read_url_from_json()
+    prompt = "\nEnter the URL:  "
     if existing_url:
-        use_last_link = input(f"Use last link? (y/N): ").strip().lower()
-        return use_last_link == 'y'
-    return False
-
-def run_playwright_test():
-    subprocess.run(["npx", "playwright", "test", "main.spec.ts", "--ui"])
-
-def main():
-    if should_use_last_link():
-        url = read_url_from_json()
+        use_last_link = input(f"\n* make sure to use phone hotspot *\nUse last link? (y/N): ").strip().lower()
+        if use_last_link == 'y':
+            url = existing_url
+        else:
+            url = input(prompt)
     else:
-        url = get_user_input()
-        write_url_to_json(url)
+        url = input(prompt)
 
-    run_playwright_test()
+    with open('tests/url.json', 'w') as file:
+        json.dump({"url": url}, file)
+
+    subprocess.run(["npx", "playwright", "test", "main.spec.ts", "--ui"])
 
 if __name__ == "__main__":
     main()
